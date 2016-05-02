@@ -9,10 +9,10 @@ import (
 )
 
 type Environment struct {
-	cells [][]int
-	//cellsNext [][]int TODO
-	rows int
-	cols int
+	cells     [][]int
+	cellsNext [][]int
+	rows      int
+	cols      int
 }
 
 func main() {
@@ -45,20 +45,23 @@ func initializeEnvironment(content string) Environment {
 	rows, _ := strconv.Atoi(s[0])
 	cols, _ := strconv.Atoi(s[1])
 	cells := make([][]int, rows)
+	cellsNext := make([][]int, rows)
 
 	for i, line := range lines[1 : len(lines)-1] {
-		cells[i] = make([]int, cols)
+		cellsNext[i] = make([]int, cols)
 		for j := 0; j < cols; j++ {
 			char := line[j]
 			if char == '.' {
-				cells[i][j] = 0
+				cellsNext[i][j] = 0
 			}
 			if char == '*' {
-				cells[i][j] = 1
+				cellsNext[i][j] = 1
 			}
 		}
 	}
-	return Environment{cells, rows, cols}
+	environment := Environment{cells, cellsNext, rows, cols}
+	environment.copyNextGeneration()
+	return environment
 }
 
 //Conways 4 rules of life
@@ -105,6 +108,14 @@ func (e *Environment) printCells() {
 			fmt.Print(e.cells[x][y])
 		}
 		fmt.Println()
+	}
+}
+
+func (e *Environment) copyNextGeneration() {
+	for x := 0; x < e.rows; x++ {
+		for y := 0; y < e.cols; y++ {
+			e.cells[x][y] = e.cellsNext[x][y]
+		}
 	}
 }
 
