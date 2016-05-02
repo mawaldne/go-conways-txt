@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	//"strconv"
+	"strconv"
 	"strings"
 )
 
@@ -15,7 +15,7 @@ import (
 //4. Any dead cell with exactly three live neighbours becomes a live cell.
 
 type Environment struct {
-	cells [5][5]int
+	cells [][]int
 }
 
 func main() {
@@ -42,20 +42,19 @@ func initializeEnvironment(content string) Environment {
 		os.Exit(1)
 	}
 
-	var cells [5][5]int
+	x, _ := strconv.Atoi(s[0])
+	y, _ := strconv.Atoi(s[1])
+	cells := make([][]int, x)
 
-	//x, _ := strconv.Atoi(s[0])
-	//y, _ := strconv.Atoi(s[1])
-	//fmt.Printf("%v %v\n", x, y)
-
-	for x, line := range lines[1:] {
-		fmt.Printf("%v\n", line)
-		for y, char := range line {
+	for i, line := range lines[1 : len(lines)-1] {
+		cells[i] = make([]int, y)
+		for j := 0; j < y; j++ {
+			char := line[j]
 			if char == '.' {
-				cells[x][y] = 0
+				cells[i][j] = 0
 			}
 			if char == '*' {
-				cells[x][y] = 1
+				cells[i][j] = 1
 			}
 		}
 	}
