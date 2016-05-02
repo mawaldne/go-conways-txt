@@ -30,6 +30,7 @@ func main() {
 	environment := initializeEnvironment(string(content))
 	environment.printCells()
 	environment.runRules()
+	environment.copyNextGeneration()
 	environment.printCells()
 	//fmt.Println(environment.cells)
 }
@@ -48,19 +49,21 @@ func initializeEnvironment(content string) Environment {
 	cellsNext := make([][]int, rows)
 
 	for i, line := range lines[1 : len(lines)-1] {
+		cells[i] = make([]int, cols)
 		cellsNext[i] = make([]int, cols)
 		for j := 0; j < cols; j++ {
 			char := line[j]
 			if char == '.' {
+				cells[i][j] = 0
 				cellsNext[i][j] = 0
 			}
 			if char == '*' {
+				cells[i][j] = 1
 				cellsNext[i][j] = 1
 			}
 		}
 	}
 	environment := Environment{cells, cellsNext, rows, cols}
-	environment.copyNextGeneration()
 	return environment
 }
 
@@ -76,14 +79,14 @@ func (e *Environment) runRules() {
 			fmt.Println("x:", x, "y:", y, "LiveCells:", liveCells)
 			if e.isAlive(x, y) {
 				if liveCells < 2 {
-					e.cells[x][y] = 0
+					e.cellsNext[x][y] = 0
 				}
 				if liveCells > 3 {
-					e.cells[x][y] = 0
+					e.cellsNext[x][y] = 0
 				}
 			} else {
 				if liveCells == 3 {
-					e.cells[x][y] = 1
+					e.cellsNext[x][y] = 1
 				}
 			}
 		}
