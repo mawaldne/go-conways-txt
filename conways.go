@@ -8,14 +8,11 @@ import (
 	"strings"
 )
 
-//Conways 4 rules of life
-//1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
-//2. Any live cell with more than three live neighbours dies, as if by overcrowding.
-//3. Any live cell with two or three live neighbours lives on to the next generation.
-//4. Any dead cell with exactly three live neighbours becomes a live cell.
-
 type Environment struct {
 	cells [][]int
+	//cellsNext [][]int TODO
+	rows int
+	cols int
 }
 
 func main() {
@@ -31,7 +28,10 @@ func main() {
 	}
 
 	environment := initializeEnvironment(string(content))
-	fmt.Println("2d: ", environment.cells)
+	environment.printCells()
+	environment.runRules()
+	environment.printCells()
+	//fmt.Println(environment.cells)
 }
 
 func initializeEnvironment(content string) Environment {
@@ -42,13 +42,13 @@ func initializeEnvironment(content string) Environment {
 		os.Exit(1)
 	}
 
-	x, _ := strconv.Atoi(s[0])
-	y, _ := strconv.Atoi(s[1])
-	cells := make([][]int, x)
+	rows, _ := strconv.Atoi(s[0])
+	cols, _ := strconv.Atoi(s[1])
+	cells := make([][]int, rows)
 
 	for i, line := range lines[1 : len(lines)-1] {
-		cells[i] = make([]int, y)
-		for j := 0; j < y; j++ {
+		cells[i] = make([]int, cols)
+		for j := 0; j < cols; j++ {
 			char := line[j]
 			if char == '.' {
 				cells[i][j] = 0
@@ -58,5 +58,64 @@ func initializeEnvironment(content string) Environment {
 			}
 		}
 	}
-	return Environment{cells}
+	return Environment{cells, rows, cols}
+}
+
+//Conways 4 rules of life
+//1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+//2. Any live cell with more than three live neighbours dies, as if by overcrowding.
+//3. Any live cell with two or three live neighbours lives on to the next generation.
+//4. Any dead cell with exactly three live neighbours becomes a live cell.
+func (e *Environment) runRules() {
+	for x := 0; x < e.rows; x++ {
+		for y := 0; y < e.cols; y++ {
+			liveCells := e.surroundingLiveCells(x, y)
+			fmt.Println("x:", x, "y:", y, "LiveCells:", liveCells)
+			if e.isAlive(x, y) {
+				if liveCells < 2 {
+					e.cells[x][y] = 0
+				}
+				if liveCells > 3 {
+					e.cells[x][y] = 0
+				}
+			} else {
+				if liveCells == 3 {
+					e.cells[x][y] = 1
+				}
+			}
+		}
+	}
+}
+
+func (e *Environment) surroundingLiveCells(x int, y int) int {
+	liveCells := 0
+	for i := x - 1; i <= x+1; i++ {
+		for j := y - 1; j <= y+1; j++ {
+			if e.inEnvironment(i, j) && e.isAlive(i, j) {
+				liveCells++
+			}
+		}
+	}
+	return liveCells
+}
+
+func (e *Environment) printCells() {
+	for x := 0; x < e.rows; x++ {
+		for y := 0; y < e.cols; y++ {
+			fmt.Print(e.cells[x][y])
+		}
+		fmt.Println()
+	}
+}
+
+func (e *Environment) inEnvironment(x int, y int) bool {
+	return x > 0 && y > 0 && x < e.rows && y < e.cols
+}
+
+func (e *Environment) isAlive(x int, y int) bool {
+	return e.cells[x][y] == 1
+}
+
+func (e *Environment) isDead(x int, y int) bool {
+	return e.cells[x][y] == 0
 }
