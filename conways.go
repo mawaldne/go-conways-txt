@@ -28,7 +28,7 @@ func main() {
 	}
 
 	environment := initializeEnvironment(string(content))
-	environment.printCells()
+	//environment.printCells()
 	environment.runRules()
 	environment.copyNextGeneration()
 	environment.printCells()
