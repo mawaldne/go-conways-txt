@@ -32,7 +32,6 @@ func main() {
 	environment.runRules()
 	environment.copyNextGeneration()
 	environment.printCells()
-	//fmt.Println(environment.cells)
 }
 
 func initializeEnvironment(content string) Environment {
@@ -76,7 +75,7 @@ func (e *Environment) runRules() {
 	for x := 0; x < e.rows; x++ {
 		for y := 0; y < e.cols; y++ {
 			liveCells := e.surroundingLiveCells(x, y)
-			fmt.Println("x:", x, "y:", y, "LiveCells:", liveCells)
+			//fmt.Println("x:", x, "y:", y, "LiveCells:", liveCells)
 			if e.isAlive(x, y) {
 				if liveCells < 2 {
 					e.cellsNext[x][y] = 0
